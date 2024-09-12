@@ -11,7 +11,9 @@ mongoose.connect(config.MONGODB_URI).then(() => {
 });
 
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
+const usersRouter = require("./routes/usersRouter");
+const productRouter = require("./routes/productsRouter");
+const categoryRouter = require("./routes/categoryRouter");
 const pageRouter = require("./routes/pageRouter");
 // const abcRouter = require("./routes/abc");
 
@@ -28,6 +30,8 @@ app.use(passport.initialize());
 // routes
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/products", productRouter);
+app.use("/categories", categoryRouter);
 app.use("/page1", pageRouter);
 
 module.exports = app;

@@ -2,9 +2,8 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const config = require("../config/index");
 const { saveImageToGoogle } = require("../lib/saveImageToGoogle");
-const { bucket } = require("../lib/saveImageToGoogle"); // นำเข้า bucket แยกต่างหาก
 
-exports.showAllUsers = async (req, res, next) => {
+exports.showAll = async (req, res, next) => {
   try {
     const user = await User.find().sort({ createdAt: -1 });
     res.status(200).json(user);
@@ -114,7 +113,7 @@ exports.login = async (req, res, next) => {
     });
   }
 };
-exports.updateUser = async (req, res, next) => {
+exports.update = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { username, email, role, password } = req.body;
@@ -132,7 +131,7 @@ exports.updateUser = async (req, res, next) => {
     }
     if (req.file) {
       const fileName = await saveImageToGoogle(req.file);
-      user.image = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+      user.image = `https://storage.googleapis.com/${config.BUCKET}/${fileName}`;
     }
     await user.save();
 
@@ -148,7 +147,7 @@ exports.updateUser = async (req, res, next) => {
     });
   }
 };
-exports.deleteUser = async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
@@ -167,7 +166,7 @@ exports.deleteUser = async (req, res, next) => {
     });
   }
 };
-exports.getPaginationUser = async (req, res, next) => {
+exports.getPagination = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page || 1); //หน้าที่ต้องการ
     const limit = parseInt(req.query.limit || 10); //จํานวนข้อมูลต่อหน้า
@@ -186,7 +185,7 @@ exports.getPaginationUser = async (req, res, next) => {
       users,
       currentPage: page,
       totalPages,
-      totalUsers: total,
+      total,
     });
   } catch (error) {
     console.log(error);
