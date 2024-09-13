@@ -4,31 +4,214 @@ const categoryController = require("../controller/categoryController");
 const upload = require("../middleware/multerConfig");
 const passport = require("../middleware/passpostJWT");
 
-// http://localhost:3000/categories
+/**
+ * @swagger
+ * /categories:
+ *   get:
+ *     summary: ดึงข้อมูลหมวดหมู่ทั้งหมด
+ *     tags: [Category]
+ *     responses:
+ *       200:
+ *         description: รายการหมวดหมู่ทั้งหมด
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Category'
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
+ */
 router.get("/", categoryController.showAll);
 
-// http://localhost:3000/categories/create
+/**
+ * @swagger
+ * /categories/pagination:
+ *   get:
+ *     summary: ดึงข้อมูลหมวดหมู่พร้อมการแบ่งหน้า
+ *     tags: [Category]
+ *     parameters:
+ *       - name: page
+ *         in: query
+ *         description: หน้าที่ต้องการ (ค่าที่เป็นตัวเลข)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - name: limit
+ *         in: query
+ *         description: จำนวนข้อมูลต่อหน้า (ค่าที่เป็นตัวเลข)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: รายการหมวดหมู่แบบแบ่งหน้า
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 10
+ *                 total:
+ *                   type: integer
+ *                   example: 100
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
+ */
+router.get("/pagination", categoryController.getPagination);
+
+/**
+ * @swagger
+ * /categories/{id}:
+ *   get:
+ *     summary: ดึงข้อมูลหมวดหมู่ตาม ID
+ *     description: ดึงข้อมูลหมวดหมู่ตาม ID โดยไม่ต้องเข้าสู่ระบบ
+ *     tags: [Category]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID ของหมวดหมู่ที่ต้องการดึงข้อมูล
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "60b7dce3f9d8f761d4a0e2c0"
+ *     responses:
+ *       200:
+ *         description: ข้อมูลของหมวดหมู่
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       404:
+ *         description: ไม่พบหมวดหมู่
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
+ */
+router.get("/:id", categoryController.showById);
+
+/**
+ * @swagger
+ * /categories/create:
+ *   post:
+ *     summary: สร้างหมวดหมู่ใหม่
+ *     tags: [Category]
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: ชื่อของหมวดหมู่
+ *                 example: "อิเล็กทรอนิกส์"
+ *               description:
+ *                 type: string
+ *                 description: คำอธิบายของหมวดหมู่
+ *                 example: "หมวดหมู่สำหรับสินค้าประเภทอิเล็กทรอนิกส์"
+ *     responses:
+ *       200:
+ *         description: หมวดหมู่ถูกสร้างสำเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       400:
+ *         description: ชื่อหมวดหมู่นี้มีอยู่แล้ว
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
+ */
 router.post(
   "/create",
-  upload.single("image"),
   [passport.isLogin, passport.isAdmin],
   categoryController.create
 );
 
-// http://localhost:3000/categories/pagination?page=1&limit=5
-router.get("/pagination", categoryController.getPagination);
-
-// http://localhost:3000/categories/:id
-router.get("/:id", categoryController.showById);
-
-// http://localhost:3000/categories/:id
+/**
+ * @swagger
+ * /categories/{id}:
+ *   put:
+ *     summary: อัปเดตหมวดหมู่ตาม ID
+ *     tags: [Category]
+ *     description: แก้ไขข้อมูลผู้ใช้ตาม ID โดยต้องเข้าสู่ระบบและมีสิทธิ์เป็น Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: รหัสของหมวดหมู่ (Category ID)
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "id"
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: ชื่อใหม่ของหมวดหมู่
+ *                 example: "อิเล็กทรอนิกส์อัปเดต"
+ *               description:
+ *                 type: string
+ *                 description: คำอธิบายใหม่ของหมวดหมู่
+ *                 example: "คำอธิบายหมวดหมู่ที่อัปเดต"
+ *     responses:
+ *       200:
+ *         description: ข้อมูลการแก้ไขของหมวดหมู่
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       404:
+ *         description: ไม่พบหมวดหมู่
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
+ */
 router.put(
   "/:id",
   [passport.isLogin, passport.isAdmin],
   categoryController.update
 );
-
-// http://localhost:3000/categories/:id
+/**
+ * @swagger
+ * /categories/{id}:
+ *   delete:
+ *     summary: ลบหมวดหมู่ตาม ID
+ *     tags: [Category]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID ของหมวดหมู่ที่ต้องการลบ
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "60b7dce3f9d8f761d4a0e2c0"
+ *     responses:
+ *       200:
+ *         description: ลบหมวดหมู่สำเร็จ
+ *       400:
+ *         description: ไม่สามารถลบหมวดหมู่ได้ เนื่องจากยังมีสินค้าที่ใช้หมวดหมู่นี้อยู่
+ *       404:
+ *         description: ไม่พบหมวดหมู่ที่ต้องการลบ
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
+ */
 router.delete(
   "/:id",
   [passport.isLogin, passport.isAdmin],

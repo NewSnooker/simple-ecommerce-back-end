@@ -10,7 +10,7 @@ exports.showAll = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };
@@ -29,7 +29,7 @@ exports.showById = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };
@@ -67,7 +67,7 @@ exports.register = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };
@@ -109,7 +109,7 @@ exports.login = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };
@@ -141,7 +141,7 @@ exports.update = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };
@@ -160,7 +160,7 @@ exports.delete = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };
@@ -188,7 +188,7 @@ exports.getPagination = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "เกิดข้อผิดพลาดบางอย่าง" + error,
+      message: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" + error,
     });
   }
 };

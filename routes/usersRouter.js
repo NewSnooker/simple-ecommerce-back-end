@@ -26,6 +26,8 @@ const passport = require("../middleware/passpostJWT");
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       403:
  *         description: คุณไม่มีสิทธิ์เข้าถึงในส่วนนี้ (ต้องเป็น Admin)
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.get("/", [passport.isLogin, passport.isAdmin], userController.showAll);
 
@@ -43,11 +45,13 @@ router.get("/", [passport.isLogin, passport.isAdmin], userController.showAll);
  *         name: page
  *         schema:
  *           type: integer
+ *           example: 1
  *         description: หน้าที่ต้องการ (ค่าที่เป็นตัวเลข)
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           example: 10
  *         description: จำนวนข้อมูลต่อหน้า (ค่าที่เป็นตัวเลข)
  *     responses:
  *       200:
@@ -56,6 +60,8 @@ router.get("/", [passport.isLogin, passport.isAdmin], userController.showAll);
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       403:
  *         description: คุณไม่มีสิทธิ์เข้าถึงในส่วนนี้ (ต้องเป็น Admin)
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.get(
   "/pagination",
@@ -88,6 +94,8 @@ router.get(
  *         description: คุณไม่มีสิทธิ์เข้าถึงในส่วนนี้ (ต้องเป็น Admin)
  *       404:
  *         description: ไม่พบผู้ใช้งาน
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.get("/:id", [passport.isLogin], userController.showById);
 
@@ -119,6 +127,8 @@ router.get("/:id", [passport.isLogin], userController.showById);
  *         description: สมัครสมาชิกสำเร็จ
  *       400:
  *         description: อีเมลนี้มีผู้ใช้งานแล้ว
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.post("/register", upload.single("image"), userController.register);
 
@@ -147,6 +157,8 @@ router.post("/register", upload.single("image"), userController.register);
  *         description: รหัสผ่านไม่ถูกต้อง
  *       404:
  *         description: ไม่พบผู้ใช้งาน
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.post("/login", userController.login);
 
@@ -189,6 +201,8 @@ router.post("/login", userController.login);
  *         description: ข้อมูลการแก้ไข
  *       401:
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.put(
   "/:id",
@@ -222,6 +236,8 @@ router.put(
  *         description: คุณไม่มีสิทธิ์เข้าถึงในส่วนนี้ (ต้องเป็น Admin)
  *       404:
  *         description: ไม่พบผู้ใช้งาน
+ *       500:
+ *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
 router.delete(
   "/:id",
