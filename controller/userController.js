@@ -137,9 +137,7 @@ exports.update = async (req, res, next) => {
 
     const userResponse = user.toObject();
     delete userResponse.password;
-    res.status(200).json({
-      userResponse,
-    });
+    res.status(200).json(userResponse);
   } catch (error) {
     console.log(error);
     res.status(500).json({
