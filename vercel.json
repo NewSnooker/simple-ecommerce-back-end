@@ -9,7 +9,7 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "sever.js",
+        "dest": "back-end.js",
         "headers": {
           "Access-Control-Allow-Origin": "*"
         }
