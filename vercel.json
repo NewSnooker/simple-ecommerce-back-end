@@ -2,14 +2,14 @@
     "version": 2,
     "builds": [
       {
-        "src": "back-end.js",
+        "src": "app.js",
         "use": "@vercel/node"
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "back-end.js",
+        "dest": "app.js",
         "headers": {
           "Access-Control-Allow-Origin": "*"
         }
