@@ -6,9 +6,17 @@ const passport = require("../middleware/passpostJWT");
 
 /**
  * @swagger
+ * tags:
+ *   name: Category
+ *   description: การจัดการหมวดหมู่
+ */
+
+/**
+ * @swagger
  * /categories:
  *   get:
  *     summary: ดึงข้อมูลหมวดหมู่ทั้งหมด
+ *     description: ดึงข้อมูลหมวดหมู่ทั้งหมด โดยยังไม่เข้าสู่ระบบ
  *     tags: [Category]
  *     responses:
  *       200:
@@ -18,7 +26,24 @@ const passport = require("../middleware/passpostJWT");
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Category'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   products:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/Product'
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
@@ -29,6 +54,7 @@ router.get("/", categoryController.showAll);
  * /categories/pagination:
  *   get:
  *     summary: ดึงข้อมูลหมวดหมู่พร้อมการแบ่งหน้า
+ *     description: ดึงข้อมูลหมวดหมู่พร้อมการแบ่งหน้า โดยยังไม่เข้าสู่ระบบ
  *     tags: [Category]
  *     parameters:
  *       - name: page
@@ -88,11 +114,28 @@ router.get("/pagination", categoryController.getPagination);
  *           example: "60b7dce3f9d8f761d4a0e2c0"
  *     responses:
  *       200:
- *         description: ข้อมูลของหมวดหมู่
+ *         description: ข้อมูลของหมวดหมู่ ตาม ID
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Category'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   products:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/Product'
  *       404:
  *         description: ไม่พบหมวดหมู่
  *       500:
@@ -144,7 +187,7 @@ router.post(
  *   put:
  *     summary: อัปเดตหมวดหมู่ตาม ID
  *     tags: [Category]
- *     description: แก้ไขข้อมูลผู้ใช้ตาม ID โดยต้องเข้าสู่ระบบและมีสิทธิ์เป็น Admin
+ *     description: แก้ไขข้อมูลหมวดหมู่ตาม ID โดยต้องเข้าสู่ระบบและมีสิทธิ์เป็น Admin
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -171,7 +214,7 @@ router.post(
  *                 example: "คำอธิบายหมวดหมู่ที่อัปเดต"
  *     responses:
  *       200:
- *         description: ข้อมูลการแก้ไขของหมวดหมู่
+ *         description: อัปเดตหมวดหมู่สำเร็จ
  *         content:
  *           application/json:
  *             schema:
@@ -186,6 +229,7 @@ router.put(
   [passport.isLogin, passport.isAdmin],
   categoryController.update
 );
+
 /**
  * @swagger
  * /categories/{id}:
@@ -205,6 +249,14 @@ router.put(
  *     responses:
  *       200:
  *         description: ลบหมวดหมู่สำเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ลบหมวดหมู่สำเร็จ"
  *       400:
  *         description: ไม่สามารถลบหมวดหมู่ได้ เนื่องจากยังมีสินค้าที่ใช้หมวดหมู่นี้อยู่
  *       404:

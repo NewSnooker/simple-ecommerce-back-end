@@ -3,7 +3,12 @@ var router = express.Router();
 const userController = require("../controller/userController");
 const upload = require("../middleware/multerConfig");
 const passport = require("../middleware/passpostJWT");
-
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: การจัดการผู้ใช้
+ */
 /**
  * @swagger
  * /users:
@@ -56,6 +61,24 @@ router.get("/", [passport.isLogin, passport.isAdmin], userController.showAll);
  *     responses:
  *       200:
  *         description: รายชื่อผู้ใช้พร้อมข้อมูลการแบ่งหน้า
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 10
+ *                 total:
+ *                   type: integer
+ *                   example: 100
  *       401:
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       403:
@@ -87,7 +110,11 @@ router.get(
  *         description: รหัสผู้ใช้ (User ID)
  *     responses:
  *       200:
- *         description: ข้อมูลผู้ใช้
+ *         description: ข้อมูลผู้ใช้ ตาม ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *                 $ref: '#/components/schemas/User'
  *       401:
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       403:
@@ -125,6 +152,17 @@ router.get("/:id", [passport.isLogin], userController.showById);
  *     responses:
  *       200:
  *         description: สมัครสมาชิกสำเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: สมัครสมาชิกสําเร็จ
+ *                 user:
+ *                   type: object
+ *                   $ref: '#/components/schemas/User'
  *       400:
  *         description: อีเมลนี้มีผู้ใช้งานแล้ว
  *       500:
@@ -153,6 +191,21 @@ router.post("/register", upload.single("image"), userController.register);
  *     responses:
  *       200:
  *         description: เข้าสู่ระบบสำเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: เข้าสู่ระบบสําเร็จ
+ *                 access_token:
+ *                   type: string
+ *                 expire_in:
+ *                   type: number
+ *                 token_type:
+ *                   type: string
+ *                   example: Bearer
  *       401:
  *         description: รหัสผ่านไม่ถูกต้อง
  *       404:
@@ -199,8 +252,25 @@ router.post("/login", userController.login);
  *     responses:
  *       200:
  *         description: ข้อมูลการแก้ไข
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 image:
+ *                   type: string
  *       401:
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
+ *       404:
+ *         description: ไม่พบผู้ใช้งาน
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
@@ -216,7 +286,7 @@ router.put(
  * /users/{id}:
  *   delete:
  *     summary: ลบผู้ใช้ตาม ID
- *     description: ลบผู้ใช้ตาม ID โดยต้องมีสิทธิ์เป็น Admin
+ *     description: ลบผู้ใช้ตาม ID โดยต้องเข้าสู่ระบบและมีสิทธิ์เป็น Admin
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -230,6 +300,14 @@ router.put(
  *     responses:
  *       200:
  *         description: ลบผู้ใช้งานสําเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ลบผู้ใช้งานสําเร็จ"
  *       401:
  *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       403:
