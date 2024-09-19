@@ -1,9 +1,15 @@
+var express = require("express");
+var router = express.Router();
+const cartController = require("../controller/cartController");
+const passport = require("../middleware/passpostJWT");
 /**
  * @swagger
  * /carts:
  *   post:
  *     summary: เพิ่มสินค้าลงตะกร้า
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       content:
  *         application/json:
@@ -31,6 +37,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cart'
+ *       401:
+ *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
  *       404:
@@ -38,16 +46,18 @@
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
-router.post("/", cartController.addToCart);
+router.post("/", [passport.isLogin], cartController.addToCart);
 
 /**
  * @swagger
- * /carts/{cartId}/increase:
+ * /carts/{userId}/increase:
  *   patch:
  *     summary: เพิ่มจำนวนสินค้าในตะกร้า
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: cartId
+ *       - name: userId
  *         in: path
  *         required: true
  *         schema:
@@ -78,21 +88,29 @@ router.post("/", cartController.addToCart);
  *               $ref: '#/components/schemas/Cart'
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
+ *       401:
+ *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       404:
  *         description: ไม่พบตะกร้าสินค้าหรือสินค้าในตะกร้า
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
-router.patch("/:cartId/increase", cartController.increaseQuantity);
+router.patch(
+  "/:userId/increase",
+  [passport.isLogin],
+  cartController.increaseQuantity
+);
 
 /**
  * @swagger
- * /carts/{cartId}/decrease:
+ * /carts/{userId}/decrease:
  *   patch:
  *     summary: ลดจำนวนสินค้าในตะกร้า
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: cartId
+ *       - name: userId
  *         in: path
  *         required: true
  *         schema:
@@ -123,21 +141,29 @@ router.patch("/:cartId/increase", cartController.increaseQuantity);
  *               $ref: '#/components/schemas/Cart'
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
+ *       401:
+ *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       404:
  *         description: ไม่พบตะกร้าสินค้าหรือสินค้าในตะกร้า
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
-router.patch("/:cartId/decrease", cartController.decreaseQuantity);
+router.patch(
+  "/:userId/decrease",
+  [passport.isLogin],
+  cartController.decreaseQuantity
+);
 
 /**
  * @swagger
- * /carts/{cartId}/products/{productId}:
+ * /carts/{userId}/products/{productId}:
  *   delete:
  *     summary: ลบสินค้าออกจากตะกร้า
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: cartId
+ *       - name: userId
  *         in: path
  *         required: true
  *         schema:
@@ -158,21 +184,29 @@ router.patch("/:cartId/decrease", cartController.decreaseQuantity);
  *               $ref: '#/components/schemas/Cart'
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
+ *       401:
+ *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       404:
  *         description: ไม่พบตะกร้าสินค้าหรือสินค้าในตะกร้า
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
-router.delete("/:cartId/products/:productId", cartController.removeFromCart);
+router.delete(
+  "/:userId/products/:productId",
+  [passport.isLogin],
+  cartController.removeFromCart
+);
 
 /**
  * @swagger
- * /carts/{cartId}:
+ * /carts/{userId}:
  *   get:
  *     summary: ดึงข้อมูลตะกร้าสินค้าตาม ID
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: cartId
+ *       - name: userId
  *         in: path
  *         required: true
  *         schema:
@@ -185,43 +219,13 @@ router.delete("/:cartId/products/:productId", cartController.removeFromCart);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cart'
+ *       401:
+ *         description: Unauthorized (ยังไม่เข้าสู่ระบบ)
  *       404:
  *         description: ไม่พบตะกร้าสินค้า
  *       500:
  *         description: เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์
  */
-router.get("/:cartId", cartController.getCart);
+router.get("/:userId", [passport.isLogin], cartController.getCart);
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Cart:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           description: รหัสตะกร้าสินค้า
- *         userId:
- *           type: string
- *           description: รหัสผู้ใช้
- *         products:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               productId:
- *                 type: string
- *                 description: รหัสสินค้า
- *               quantity:
- *                 type: integer
- *                 description: จำนวนสินค้า
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: วันที่สร้างตะกร้า
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: วันที่อัปเดตตะกร้าล่าสุด
- */
+module.exports = router;

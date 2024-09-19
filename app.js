@@ -15,6 +15,8 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/usersRouter");
 const productRouter = require("./routes/productsRouter");
 const categoryRouter = require("./routes/categoryRouter");
+const cartRouter = require("./routes/cartRouter");
+
 const pageRouter = require("./routes/pageRouter");
 const { swaggerUi, swaggerSpec } = require("./lib/swagger");
 // const abcRouter = require("./routes/abc");
@@ -36,6 +38,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/products", productRouter);
 app.use("/categories", categoryRouter);
+app.use("/carts", cartRouter);
 app.use("/page1", pageRouter);
 
 module.exports = app;

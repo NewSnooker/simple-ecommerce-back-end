@@ -42,10 +42,12 @@ exports.addToCart = async (req, res) => {
 
 exports.increaseQuantity = async (req, res) => {
   try {
-    const { cartId } = req.params;
+    const { userId } = req.params;
     const { productId, quantity } = req.body;
 
-    const cart = await Cart.findById(cartId);
+    const cart = await Cart.findOne({
+      userId,
+    });
     if (!cart) {
       return res.status(404).json({ message: "ไม่พบตะกร้าสินค้า" });
     }
@@ -54,10 +56,13 @@ exports.increaseQuantity = async (req, res) => {
       (item) => item.productId.toString() === productId
     );
     if (productIndex === -1) {
-      return res.status(404).json({ message: "ไม่พบสินค้าในตะกร้า" });
+      // ถ้ายังไม่มี ให้เพิ่มสินค้าใหม่
+      cart.products.push({ productId, quantity });
+    } else {
+      // ถ้ามีแล้ว ให้เพิ่มจำนวน
+      cart.products[productIndex].quantity += quantity;
     }
 
-    cart.products[productIndex].quantity += quantity;
     await cart.save();
 
     res.status(200).json(cart);
@@ -71,10 +76,12 @@ exports.increaseQuantity = async (req, res) => {
 
 exports.decreaseQuantity = async (req, res) => {
   try {
-    const { cartId } = req.params;
+    const { userId } = req.params;
     const { productId, quantity } = req.body;
 
-    const cart = await Cart.findById(cartId);
+    const cart = await Cart.findOne({
+      userId,
+    });
     if (!cart) {
       return res.status(404).json({ message: "ไม่พบตะกร้าสินค้า" });
     }
@@ -105,9 +112,11 @@ exports.decreaseQuantity = async (req, res) => {
 
 exports.removeFromCart = async (req, res) => {
   try {
-    const { cartId, productId } = req.params;
+    const { userId, productId } = req.params;
 
-    const cart = await Cart.findById(cartId);
+    const cart = await Cart.findOne({
+      userId,
+    });
     if (!cart) {
       return res.status(404).json({ message: "ไม่พบตะกร้าสินค้า" });
     }
@@ -133,9 +142,11 @@ exports.removeFromCart = async (req, res) => {
 
 exports.getCart = async (req, res) => {
   try {
-    const { cartId } = req.params;
+    const { userId } = req.params;
 
-    const cart = await Cart.findById(cartId).populate("products.productId");
+    const cart = await Cart.findOne({
+      userId,
+    }).populate("products.productId");
     if (!cart) {
       return res.status(404).json({ message: "ไม่พบตะกร้าสินค้า" });
     }
