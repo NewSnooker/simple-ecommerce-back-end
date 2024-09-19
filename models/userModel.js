@@ -7,6 +7,7 @@ const schema = new mongoose.Schema(
     password: { type: String, require: true, trim: true, minlength: 5 },
     image: { type: String, default: "nopic.png" },
     role: { type: String, default: "member" },
+    // cart: { type: Array, default: [] },
   },
   {
     collection: "users",
